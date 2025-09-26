@@ -10,18 +10,17 @@ app.use(express.static('public'));
 
 io.on('connection', (socket) => {
   console.log('user connected!');
+  const username = socket.handshake.query.username; 
+  
+  socket.broadcast.emit('user joined', username);
+  
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', `${username}: ${msg}`);
+  });
 
   socket.on('disconnect', () => {
     console.log('user disconnected!');
   });
-
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
-
-  socket.on('user joined', (username) => {
-    socket.broadcast.emit('user joined', username);
-  })
 });
 
 
